@@ -45,6 +45,11 @@ template<typename T> class Vector
 		}	
 		T &operator[](Rank r) const;
 		void unsort(Rank lo,Rank hi);
+		Rank find(T const&e,Rank lo,Rank hi);
+		Rank insert(Rank r,T const &e);
+		int remove(Rank lo,Rank hi);
+		int remove(Rank r);
+		//static bool lt(T *a,T *b);
 }
 template <typename T> void Vector<T>::copyFrom(T const&A,Rank lo,Rank hi)
 {
@@ -86,5 +91,35 @@ template<typename T> void Vector<T>::unsort(Rank lo,Rank hi)
 	{
 		swap(V[i-1],V[rand()%i]);
 	}
+}
+template<typename T> Rank Vector<T>::find(T const&e,Rank lo,Rank hi)
+{
+	while(lo<hi--&&e!=_elem[hi]);
+	return hi;
+}
+template<typename T> Rank Vector<T>::insert(Rank r,T const &e)
+{
+	expand();
+	for(int i=_size;i>r;i--)
+	{
+		_elem[i] = _elem[i-1];
+	}
+	_elem[r] = e;
+	_size++;
+	return r;	
+}
+template<typename T> int Vector<T>::remove(Rank lo,Rank hi)
+{
+	if(lo==hi) return 0;
+	while(hi<_size) _elem[lo++] = _elem[hi++];
+	_size = lo;
+	shrink();
+	return hi-lo;
+}
+template<typename T> int Vector<T>::remove(Rank r)
+{
+	T e = _elem[r];
+	remove(r,r+1);
+	return e;
 }
 
