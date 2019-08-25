@@ -17,6 +17,8 @@ template<typename T> class Vector
 		Rand partition(Rank lo,Rank hi);
 		void quickSort(Rank lo,Rank hi);
 		void heapSort(Rank lo,Rank hi);
+		static Rank binSearch(T *_elem,T const&e,Rank lo,Rank hi);
+		static Rank fibSearch(T *_elem,T const&e,Rank lo,Rank hi);
 	public:
 		Vector(int c= DEFAULT_CAPCITY,int s=0,T v=0)
 		{
@@ -49,6 +51,12 @@ template<typename T> class Vector
 		Rank insert(Rank r,T const &e);
 		int remove(Rank lo,Rank hi);
 		int remove(Rank r);
+		int deduplicate();
+		void traverse(void(*)(T&));
+		template<typename VST> void traverse(VST &);
+		int disordered()const;
+		int uniquify(); 
+		Rank search(T const &e,Rank lo,Rank hi);
 		//static bool lt(T *a,T *b);
 }
 template <typename T> void Vector<T>::copyFrom(T const&A,Rank lo,Rank hi)
@@ -122,4 +130,71 @@ template<typename T> int Vector<T>::remove(Rank r)
 	remove(r,r+1);
 	return e;
 }
-
+template<typename T> int Vector<T>::deduplicate()
+{
+	int oldsize = _size;
+	Rank i = 1;
+	while(i<_size)
+	{
+		find(_elem[i],0,i)<0?i++:remove(i);
+	}
+	return oldsize-_size;
+}
+template<typename T> void Vector<T>::traverse(void(*visit)T&)
+{
+	for(int i=0;i<_size;i++) visit(_elem[i]);
+}
+template<typename T> template<typename VST>
+void Vector<T>::traverse(VST& visit)
+template<typename T> void Vector<T>::traverse(VST& visit)
+{
+	for(int i=0;i<_size;i++) visit(_elem[i]);
+}
+template<typename T>int Vector<T>::disordered()
+{
+	int n= 0;
+	for(int i=1;i<_size;i++)
+	{
+		if(_elem[i-1]>_elem[i]) n++;
+	}
+	return n;
+}
+template<typename T> int Vector<T>::uniquify()
+{
+	Rank i=0,j=0;
+	while(++j<_size)
+	{
+		if(_elem[i]!=_elem[j]) _elem[++i] = _elem[j];
+	}
+	_size = j;
+	shrink();
+	return j-i;
+}
+template<typename T> Rank Vector<T>::search(T const&e,Rank lo,Rank hi)
+{
+	return rand()%2?binSearch(_elem,e,lo,hi):fibSearch(_elem,e,lo,hi);
+}
+template<typename T> static Rank fibSearch(T *_elem,T const &e,Rank lo,Rank hi)
+{
+	Fib fib(hi-lo);
+	while(lo<hi)
+	{
+		while(hi-lo<fib.get()) fib.prev();
+		Rank mi = lo+fib.get()-1;
+		if(e<_elem[mi]) hi = mi;
+		else if(_elem[mi]<e) lo = mi+1;
+		else return mi;
+	}
+	return -1;
+}
+template<typename T> static Rank binSearch(T *_elem,T const &e,Rank lo,Rank hi)
+{
+	while(lo<hi)
+	{
+		mi = (lo+hi)/2;
+		if(e<_elem[mi]) hi = mi;
+		else if(_elem[mi]<e) lo = mi+1;
+		else return mi;
+	}
+	return -1;
+}
