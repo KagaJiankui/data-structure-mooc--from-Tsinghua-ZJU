@@ -12,7 +12,7 @@ template<typename T> class Vector
 		void bubbleSort(Rank lo,Rank hi);
 		Rank max(Rank lo,Rank hi);
 		void selectionSort(Rank lo,Rank hi);
-		void merge(Rank lo,Rank hi);
+		void merge(Rank lo,Rank mi,Rank hi);
 		void mergeSort(Rank lo,Rank hi);
 		Rand partition(Rank lo,Rank hi);
 		void quickSort(Rank lo,Rank hi);
@@ -191,10 +191,48 @@ template<typename T> static Rank binSearch(T *_elem,T const &e,Rank lo,Rank hi)
 {
 	while(lo<hi)
 	{
-		mi = (lo+hi)/2;
+		Rank mi = (lo+hi)/2;
 		if(e<_elem[mi]) hi = mi;
-		else if(_elem[mi]<e) lo = mi+1;
-		else return mi;
+		else lo= mi+1;
 	}
-	return -1;
+	return --lo;
+}
+template<typename T> void Vector<T>::bubbleSort(Rank lo,Rank hi)
+{
+	while(lo<(hi=bubble(lo,hi));
+} 
+template<typename T> bool Vector<T>::bubble(Rank lo,Rank hi)
+{
+	Rank last = lo;
+	while(++lo<hi)
+	{
+		if(_elem[lo-1]>_elem[lo]) {
+		swap(_elem[lo-1],_elem[lo]);
+		last=lo;
+		}
+	}
+	return last;
+}
+template<typename T> void Vector<T>::mergeSort(Rank lo,Rank hi)
+{
+	if(hi-lo<2) return;
+	int mi = (hi+lo)>>1;
+	mergeSort(lo,mi);
+	mergeSort(mi,hi);
+	merge(lo,mi,hi);
+}
+template<typename T> void Vector<T>::merge(Rank lo,Rank mi,Rank hi)
+{
+	T *A  = _elem+lo;
+	int lb = mi-lo;
+	T *B = new T[lb];
+	for(Rank i=0;i<lb;B[i]=A[i++]);
+	int lc = hi-mi;
+	T *C = _elem+mi;
+	for(Rank i=0,j=0,k=0;(j<lb||k<lc);)
+	{
+		if((j<lb)&&(!(k<lc)||B[j]<=C[k])) A[i++]=B[j++];
+		if((k<lc)&&(!(j<lb)||C[k]<B[j])) A[i++]= C[k++];
+	}
+	delete []B;
 }
