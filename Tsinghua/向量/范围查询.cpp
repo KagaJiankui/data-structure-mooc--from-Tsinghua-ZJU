@@ -56,24 +56,24 @@ int main()
 	int* poi = new int[n];
 	for (int i = 0; i < n; i++)
 	{
-		cin >> poi[i];
+		scanf("%d",&poi[i]);
 	}
 	mergeSort(poi,0,n);
 	for (int i = 0; i < m; i++)
 	{
 		int bg, ed;
 		int k, j;
-		cin >> bg >> ed;
+		scanf("%d %d",&bg,&ed);
 		int cnt = 0;
 		if (poi[0] > ed||poi[n-1]<bg)
 		{
-			cout << 0 << endl;
+			printf("0\n");
 		}//最值和区间有交集       
 		else {
 			j = uppersearch(poi,bg,n);
 			k = binsearch(poi,ed,n);
 			cnt = k-j+1;
-			cout << cnt << endl;
+			printf("%d\n",cnt);
 		}
 	}
 }
