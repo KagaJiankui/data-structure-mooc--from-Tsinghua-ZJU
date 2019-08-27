@@ -29,6 +29,9 @@ template<typename T>class List
 		ListNodePosi(T) insertAsLast(T const&e);
 		ListNodePosi(T)	insertBefore(ListNodePosi(T) p,T const &e);
 		ListNodePosi(T) insertAfter(ListNodePosi(T) p,T const&e);
+		T remove(ListNodePosi(T) p);
+		int deduplicate();
+		int uniquiy();
 		
 		
 } 
@@ -42,11 +45,11 @@ template<typename T>void List<T>::init()
 	trailer->succ = NULL;
 	_size= 0;
 }
-template<typename T> T &List<T>::operator[](Rank r) const
+template<typename T> ListNodePosi(T) &List<T>::operator[](Rank r) const
 {
 	ListNodePosi(T) p = first();
 	while(0<r--) p = p->succ;
-	return p->data;
+	return p;
 }
 template<typename T> ListNodePosit(T) List<T>::find(T const &e,int n,ListNodePosi(T) p) const
 {
@@ -76,4 +79,75 @@ template<typename T> ListNodePosi(T) List<T>::insertAfter(ListNodePosi(T) p,T co
 	_size++;
 	return p->insertAsSucc(e);
 }
-
+template<typename T> void List<T>::copyNodes(ListNodePosi(T) p,int n)
+{
+	init();
+	while(n--){insertAsLast(p->data);p = p->succ;}
+} 
+template<typename T>List<T>::List(ListNodePosi(T) p,int n)
+{
+	copyNodes(p,n);
+}
+template<typename T>List<T>::List(List<T> const& L)
+{
+	copyNodes(L.first(),L._size);
+}
+template<typename T> List<T>::List(List<T>const &L,int r,int n)
+{
+	copyNodes(L[r],n);
+}
+template<typename T>T List<T>::remove(ListNodePosi(T) p)
+{
+	T e = p->data;
+	p->pred->succ = p->succ;
+	p->succ->pred = p->pred;
+	delete p;
+	_size--;
+	return e;
+}
+template<typename T> List<T>::~List()
+{
+	clear();
+	delete header;
+	delete trailer;
+}
+template<typename T> int List<T>::clear()
+{
+	int oldsize = _size;
+	while(0<size) remove(header->succ);
+	return oldsize;
+}
+template<typename T> int List<T> ::deduplicate()
+{
+	if(_size<2) return 0;
+	int oldsize= _size;
+	ListNodePosi(T) p = header;
+	Rank r = 0;
+	while(trailer!=(p=p->succ))
+	{
+		ListNodePosi(T) q = find(p->data,r,p);
+		q?remove(q):r++;
+	}
+	return oldsize-_size;
+}
+template<typename T> int List<T>::uniquify()
+{
+	if(_size<2) return 0;
+	int oldSize=  _size;
+	ListNodePosi(T) p;
+	ListNodePosi(T) q;
+	for(p=header,q=p->succ;trailer!q;p=q;q=q->succ)
+	{
+		if(q->data==p->data) 
+		{ 
+			remove(q);
+			q=p;
+		}
+	}
+}
+template<typename T> ListNodePosi(T) List<T>::search(T const&e,int n,ListNodePosi(T) p) const
+{
+	while(0<=n--)
+		if((p=p->pred)->data<=e) break;
+	return p;
+}
