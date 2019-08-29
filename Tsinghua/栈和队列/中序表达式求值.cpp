@@ -53,4 +53,5 @@ float evaluate(char *S,char*&RPN)
 			}
 		}
 	}
+	return opnd.top();
 }
