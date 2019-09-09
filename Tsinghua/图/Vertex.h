@@ -178,3 +178,85 @@ void Graph<Tv,Te>::DFS(int v,int &clock)
 	status(v) = VISITED;
 	fTime(v) = ++clock;
 }
+template<typename Tv,typename Te>void Graph<Tv,Te>::bcc(int s)
+{
+	reset();
+	int clock=0;
+	int v = s;
+	stack<int> S;
+	do{
+		if(UNDISCOVERED==status(v))
+		{
+			BCC(v,clock,S);
+		}
+		S.pop();
+	}while(s!=(v=(++v%n))); 
+}
+
+#define hca(x) (fTime(x))
+template<typename Tv,typename Te>
+void Graph<Tv,Te>::BCC(int v,int& clock,stack<int>& S)
+{
+	hca(v) = dTime(v)=++clock;
+	status(v)=DISCOVERED;
+	S.push(v);
+	for(int u=firstNbr(v);-1<u;u=nextNbr(v,u))
+	{
+		switch(status(u))
+		{
+			case UNDISCOVERED:
+				parent(u) = v;
+				status(v,u) = TREE;
+				if(hca(u)<dTime(v))
+					hca(v) = min(hca(v),hca(u));
+				else{
+					while(v!=S.pop())
+					S.push(v);
+				}
+				break;
+			case DISCOVERED:
+				status(v,u)= BACKWARD;
+				if(u!=parent(v)) hca(v)=min(hca(v),dTime(u));
+				break;
+			default:
+				status(v,u) = (dTime(v)<dTime(u))?FORWARD:CROSS;
+				break;
+		}
+	}
+	status(v) = VISITED;
+	 
+}
+template<typename Tv,typename Te> template<typename PU>
+void Graph<Tv,Te>::pfs(int s,PU prioUpdater)
+{
+	reset();
+	int v=s;
+	do
+		if(UNDISCOVERED==status(v))
+			PFS(v,prioUpdater);
+	while(s!=v=(++v%n));
+}
+template<typename Tv,typename Te> template<typename PU>
+void Graph<Tv,Te>::PFS(int s,PU prioUpdater)
+{
+	priority(s) = 0;
+	status(s) = VISITED;
+	parent(s) = -1;
+	while(1)
+	{
+		for(int w= firstNbr(s);-1<w;w=nextNbr(s,w))
+			prioUpdater(this,s,w);
+		for(int shortest= INT_MAX,w=0;w<n;w++)
+		{
+			if(status(w)==UNDISCOVERED)
+				if(shortest>priority(w))
+				{
+					shortest = priority(w);
+					s=w;
+				}
+		}
+		if(status(s)==VISITED) break;
+		status(s) = VISITED; status(parent(s), s) = TREE;
+	}
+}
+
