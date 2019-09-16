@@ -23,5 +23,41 @@ template<typename T>BinNodePosi(T) & BST<T>::search(const T&e)
 {
 	return searchIn(_root,e,_hot=NULL);
 }
+template<typename T>BinNodePosi(T) BST::insert(const T&e)
+{
+	BinNodePosi(T) &x = search(e);
+	if(x) return x;
+	x = new BinNode<T>(e,_hot);
+	_size++;
+	updateHeightAbove(x);
+	return x;
+}
+template<typename T> bool BST<T>::remove(const T&e)
+{
+	BinNodePosi(T) & x = search(e);
+	if(!x) return false;
+	removeAt(x,_hot);
+	_size--;
+	updateHeightAbove(_hot);
+	return true;
+}
+template<typename T>static BinNodePosi(T) removeAt(BinNodePosi(T) &x,BinNodePosi(T)& hot)
+{
+	BinNodePosi(T) w = x;
+	BinNodePosi(T) succ = NULL;
+	if(!HasLChild(*x)) succ = x= x->rChild;
+	else if(!HasRChild(*x)) succ = x = x->lChild;
+	else{
+		w = w->succ();
+		swap(x->data,w->data);
+		BinNodePosi(T) u = w->parent;
+		((u==x)?u->rChild:u->lChild)=succ=w->rChild;
+	}
+	hot = w->parent;
+	if(succ) succ->parent = hot;
+	release(w->data);
+	release(w);
+	return succ;
+}
 
   
